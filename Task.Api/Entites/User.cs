@@ -23,7 +23,7 @@ namespace Task.Api.Entites
         [Required]
         public DateTime BirthDate { get; set; }
         [Required]
-        [Range(0, int.MaxValue)]
+        [Range(0, 14)]
         public int NationalId { get; set; }
         [Required]
         public Statues MaritalStatus { get; set; }

@@ -48,13 +48,13 @@ namespace Task.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> EditUser(int id, UserDetailsDTO user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
             try
             {
-                await _userService.EditUser(user);
+                await _userService.EditUser(id, user);
             }
             catch (Exception ex)
             {

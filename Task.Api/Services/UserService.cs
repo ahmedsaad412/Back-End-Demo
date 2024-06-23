@@ -46,26 +46,37 @@ namespace Task.Api.Services
 
         }
 
-        public async Task<bool> EditUser(UserDetailsDTO userDetailsDTO)
+        public async Task<bool> EditUser(int id, UserDetailsDTO userDetailsDTO)
         {
             try
             {
-                var user = await _context.Users.FindAsync(userDetailsDTO.Id);
+                var user = await _context.Users.FindAsync(id);
 
                 if (user == null)
                     return false;
 
-                user.NameAr = string.Concat(userDetailsDTO.FNameAr, "#", userDetailsDTO.SecNameAr, "#", userDetailsDTO.ThirdNameAr, "#", userDetailsDTO.LNameAr) ?? user.NameAr;
-                user.NameEn = string.Concat(userDetailsDTO.FNameEn, "#", userDetailsDTO.SecNameEn, "#", userDetailsDTO.ThirdNameEn, "#", userDetailsDTO.LNameEn) ?? user.NameEn;
-                user.CountryCode = userDetailsDTO.CountryCode ?? user.CountryCode;
-                user.PhoneNumber = userDetailsDTO.PhoneNumber ?? user.PhoneNumber;
-                user.Email = userDetailsDTO.Email ?? user.Email;
+                #region NameValue 
+                string fNameAr = userDetailsDTO.FNameAr == "string" ? GetSegment(user.NameAr, 0) : userDetailsDTO.FNameAr;
+                string secNameAr = userDetailsDTO.SecNameAr == "string" ? GetSegment(user.NameAr, 1) : userDetailsDTO.SecNameAr;
+                string thirdNameAr = userDetailsDTO.ThirdNameAr == "string" ? GetSegment(user.NameAr, 2) : userDetailsDTO.ThirdNameAr;
+                string lNameAr = userDetailsDTO.LNameAr == "string" ? GetSegment(user.NameAr, 3) : userDetailsDTO.LNameAr;
+                string fNameEn = userDetailsDTO.FNameEn == "string" ? GetSegment(user.NameEn, 0) : userDetailsDTO.FNameEn;
+                string secNameEn = userDetailsDTO.SecNameEn == "string" ? GetSegment(user.NameEn, 1) : userDetailsDTO.SecNameEn;
+                string thirdNameEn = userDetailsDTO.ThirdNameEn == "string" ? GetSegment(user.NameEn, 2) : userDetailsDTO.ThirdNameEn;
+                string lNameEn = userDetailsDTO.LNameEn == "string" ? GetSegment(user.NameEn, 3) : userDetailsDTO.LNameEn;
+                #endregion
+
+                user.NameAr = string.Concat(fNameAr, "#", secNameAr, "#", thirdNameAr, "#", lNameAr);
+                user.NameEn = string.Concat(fNameEn, "#", secNameEn, "#", thirdNameEn, "#", lNameEn);
+                user.CountryCode = userDetailsDTO.CountryCode == "string" ? user.CountryCode : userDetailsDTO.CountryCode;
+                user.PhoneNumber = userDetailsDTO.PhoneNumber == "string" ? user.PhoneNumber : userDetailsDTO.PhoneNumber;
+                user.Email = userDetailsDTO.Email == "string" ? user.Email : userDetailsDTO.Email;
                 user.NationalId = userDetailsDTO.NationalId == 0 ? user.NationalId : userDetailsDTO.NationalId;
-                user.BirthDate = userDetailsDTO.BirthDate == null ? user.BirthDate : userDetailsDTO.BirthDate;
+                user.BirthDate = userDetailsDTO.BirthDate == DateTime.Now ? user.BirthDate : userDetailsDTO.BirthDate;
                 user.Gender = userDetailsDTO.Gender == 0 ? user.Gender : userDetailsDTO.Gender;
                 user.MaritalStatus = userDetailsDTO.MaritalStatus == 0 ? user.MaritalStatus : userDetailsDTO.MaritalStatus;
-                user.AddressAr = userDetailsDTO.AddressAr ?? user.AddressAr;
-                user.AddressEn = userDetailsDTO.AddressEn ?? user.AddressEn;
+                user.AddressAr = userDetailsDTO.AddressAr == "string" ? user.AddressAr : userDetailsDTO.AddressAr;
+                user.AddressEn = userDetailsDTO.AddressEn == "string" ? user.AddressEn : userDetailsDTO.AddressEn;
                 user.JobId = userDetailsDTO.JobId == 0 ? user.JobId : userDetailsDTO.JobId;
                 user.DepartmentId = userDetailsDTO.DepartmentId == 0 ? user.DepartmentId : userDetailsDTO.DepartmentId;
                 _context.Users.Update(user);
@@ -137,11 +148,6 @@ namespace Task.Api.Services
             return user.IsDeleted;
         }
 
-        private string GetSegment(string fullName, int index)
-        {
-            var segments = fullName.Split("#");
-            return index < segments.Length ? segments[index] : string.Empty;
-        }
 
         public async Task<List<DepartmentsDTO>> GetDepartments()
         {
@@ -162,6 +168,11 @@ namespace Task.Api.Services
                 .ToListAsync();
             return Jobs;
 
+        }
+        public static string GetSegment(string fullName, int index)
+        {
+            var segments = fullName.Split("#");
+            return index < segments.Length ? segments[index] : string.Empty;
         }
     }
 }

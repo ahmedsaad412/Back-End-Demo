@@ -7,7 +7,7 @@ namespace Task.Api.IServices
         Task<List<UsersDTO>> GetUsers();
         Task<bool> AddUser(AddUserDTO AddUserDto);
         Task<UserDetailsDTO> GetUserById(int Id);
-        Task<bool> EditUser(UserDetailsDTO userDetailsDTO);
+        Task<bool> EditUser(int id, UserDetailsDTO userDetailsDTO);
         Task<bool> DeleteUser(int id);
         Task<List<DepartmentsDTO>> GetDepartments();
         Task<List<JobsDTO>> GetJobs();
